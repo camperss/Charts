@@ -365,6 +365,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         // In case the chart is stacked, we need to accomodate individual bars within accessibilityOrdereredElements
         let isStacked = dataSet.isStacked
         let stackSize = isStacked ? dataSet.stackSize : 1
+        let barCorner = dataSet.barCorner > 0
 
         for j in buffer.indices
         {
@@ -379,11 +380,13 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 context.setFillColor(dataSet.color(atIndex: j).cgColor)
             }
             
-//            context.fill(barRect)
-            
-            let bezierPath = UIBezierPath(roundedRect: barRect,byRoundingCorners: [.topLeft, .topRight],cornerRadii:CGSize(width:4,height:4));
-            context.addPath(bezierPath.cgPath)
-            context.drawPath(using: .fill)
+            if barCorner {
+                let bezierPath = UIBezierPath(roundedRect: barRect,byRoundingCorners: [.topLeft, .topRight],cornerRadii:CGSize(width:dataSet.barCorner,height:dataSet.barCorner));
+                context.addPath(bezierPath.cgPath)
+                context.drawPath(using: .fill)
+            } else {
+                context.fill(barRect)
+            }
             
             if drawBorder
             {
@@ -748,11 +751,15 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 
                 setHighlightDrawPos(highlight: high, barRect: barRect)
                 
+                let barCorner = set.barCorner > 0
                 
-                let bezierPath = UIBezierPath(roundedRect: barRect,byRoundingCorners: [.topLeft, .topRight],cornerRadii:CGSize(width:4,height:4));
-                context.addPath(bezierPath.cgPath)
-                context.drawPath(using: .fill)
-//                context.fill(barRect)
+                if barCorner {
+                    let bezierPath = UIBezierPath(roundedRect: barRect,byRoundingCorners: [.topLeft, .topRight],cornerRadii:CGSize(width:set.barCorner,height:set.barCorner));
+                    context.addPath(bezierPath.cgPath)
+                    context.drawPath(using: .fill)
+                } else {
+                    context.fill(barRect)
+                }
             }
         }
     }
